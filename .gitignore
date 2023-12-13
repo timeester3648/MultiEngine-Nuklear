@@ -10,3 +10,9 @@ doc/doc*
 *.swo
 *.swp
 /private/
+
+# exclude project files
+**.sln
+**.vcxproj
+**.vcxproj.user
+**.vcxproj.filters
