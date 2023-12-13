@@ -1,6 +1,6 @@
 #pragma once
 
-#include <MultiEngine/core/Assert.h>
+#include <MultiEngine/math/Math.h>
 
 #include <limits>
 #include <string>

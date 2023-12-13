@@ -7,6 +7,7 @@ project "Nuklear"
 	cdialect "C17"
 	targetname "%{prj.name}"
 	inlining "Auto"
+	tags { "use_header_only_mle" }
 
 	files {
 		"./*.h",
@@ -24,3 +25,6 @@ project "Nuklear"
 		"%{IncludeDir.magic_enum}",
 		"%{IncludeDir.general_includes}"
 	}
+
+	filter "toolset:msc"
+		disablewarnings { "4996", "4244" }
