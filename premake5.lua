@@ -27,4 +27,4 @@ project "Nuklear"
 	}
 
 	filter "toolset:msc"
-		disablewarnings { "4996", "4244" }
+		disablewarnings { "4996", "4244", "4756", "4390" }
