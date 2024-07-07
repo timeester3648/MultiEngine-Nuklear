@@ -2,9 +2,9 @@ void main(MultiBuild::Workspace& workspace) {
 	auto project = workspace.create_project(".");
 	auto properties = project.properties();
 
-	properties.name("Nuklear");
+	project.name("Nuklear");
 	properties.binary_object_kind(MultiBuild::BinaryObjectKind::eStaticLib);
-	properties.license("./Readme.md");
+	project.license("./Readme.md");
 	properties.tags("use_header_only_mle");
 
 	properties.project_includes({
