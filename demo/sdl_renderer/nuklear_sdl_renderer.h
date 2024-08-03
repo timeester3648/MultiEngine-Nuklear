@@ -11,13 +11,17 @@
 #ifndef NK_SDL_RENDERER_H_
 #define NK_SDL_RENDERER_H_
 
-#include <SDL2/SDL.h>
+#ifndef NK_SDL_RENDERER_SDL_H
+#define NK_SDL_RENDERER_SDL_H <SDL.h>
+#endif
+#include NK_SDL_RENDERER_SDL_H
 NK_API struct nk_context*   nk_sdl_init(SDL_Window *win, SDL_Renderer *renderer);
 NK_API void                 nk_sdl_font_stash_begin(struct nk_font_atlas **atlas);
 NK_API void                 nk_sdl_font_stash_end(void);
 NK_API int                  nk_sdl_handle_event(SDL_Event *evt);
 NK_API void                 nk_sdl_render(enum nk_anti_aliasing);
 NK_API void                 nk_sdl_shutdown(void);
+NK_API void                 nk_sdl_handle_grab(void);
 
 #if SDL_COMPILEDVERSION < SDL_VERSIONNUM(2, 0, 22)
 /* Metal API does not support cliprects with negative coordinates or large
@@ -264,21 +268,26 @@ nk_sdl_font_stash_end(void)
         nk_style_set_font(&sdl.ctx, &sdl.atlas.default_font->handle);
 }
 
+NK_API void
+nk_sdl_handle_grab(void)
+{
+    struct nk_context *ctx = &sdl.ctx;
+    if (ctx->input.mouse.grab) {
+        SDL_SetRelativeMouseMode(SDL_TRUE);
+    } else if (ctx->input.mouse.ungrab) {
+        /* better support for older SDL by setting mode first; causes an extra mouse motion event */
+        SDL_SetRelativeMouseMode(SDL_FALSE);
+        SDL_WarpMouseInWindow(sdl.win, (int)ctx->input.mouse.prev.x, (int)ctx->input.mouse.prev.y);
+    } else if (ctx->input.mouse.grabbed) {
+        ctx->input.mouse.pos.x = ctx->input.mouse.prev.x;
+        ctx->input.mouse.pos.y = ctx->input.mouse.prev.y;
+    }
+}
+
 NK_API int
 nk_sdl_handle_event(SDL_Event *evt)
 {
     struct nk_context *ctx = &sdl.ctx;
-
-    /* optional grabbing behavior */
-    if (ctx->input.mouse.grab) {
-        SDL_SetRelativeMouseMode(SDL_TRUE);
-        ctx->input.mouse.grab = 0;
-    } else if (ctx->input.mouse.ungrab) {
-        int x = (int)ctx->input.mouse.prev.x, y = (int)ctx->input.mouse.prev.y;
-        SDL_SetRelativeMouseMode(SDL_FALSE);
-        SDL_WarpMouseInWindow(sdl.win, x, y);
-        ctx->input.mouse.ungrab = 0;
-    }
 
     switch(evt->type)
     {
