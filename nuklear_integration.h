@@ -9,16 +9,19 @@
 #include <stb_sprintf.h>
 
 namespace nuklear_integration {
-	inline float64 strtod_wrapper(const char* str, const char** str_end) noexcept {
+	inline float64 strtod_wrapper(const char* str, char** str_end) noexcept {
 		float64 value = 0.0;
 		const auto result = std::from_chars(str, str + std::strlen(str), value);
 		if (result.ec != std::errc{}) {
 			return std::numeric_limits<float64>::max();
 		}
 
-		if (str_end != nullptr) {
+        MLE_CORE_ASSERT(str_end == nullptr,
+                        "Nuklear made it non-const, but that is wrong, so it should never expect a result.");
+
+		/*if (str_end != nullptr) {
 			(*str_end) = result.ptr;
-		}
+		}*/
 
 		return value;
 	}
